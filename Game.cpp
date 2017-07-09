@@ -9,7 +9,7 @@ using namespace std;
 Game::Game() {
     nextPlayer = -1;
     //winner = -1;
-    turn = -1;
+    turn = 0;
 
     p_wins = 0;
     a_wins = 0;
@@ -78,7 +78,7 @@ void Game::initialize() {
     // AI goes first (2)
     nextPlayer = (playerMarker == 'X') ? 1 : 2;
 
-    turn = 1;
+    turn = 0;
 }
 
 // play enters a while-loop until a winner is decided (or tie occurs)
@@ -93,7 +93,8 @@ void Game::play() {
     int winner = 0;
 
     while (winner == 0) {
-        if (nextPlayer == 1) { // player urn
+        turn++;  // start of a new turn
+        if (nextPlayer == 1) {
             cout << "It's your move." << endl;
             cout << "Place a marker (e.g. 1 2)" << endl;
             printBoard();
@@ -198,6 +199,8 @@ int Game::checkForWin(int currPlayer, char marker, int x, int y) {
     // a) There is not yet a decided winner or 
     // b) there is a draw
     // check for a draw by looking at turns
+    cout << "COUT " << endl;
+    cout << turn << endl;
     if (turn == 9) {
         return 3;
     } else {
