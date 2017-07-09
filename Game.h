@@ -1,6 +1,6 @@
 #pragma once
 #include "Board.h"
-//#include "Square.h"
+#include "Square.h"
 //#include <vector>
 //using namespace std;
 
@@ -13,18 +13,21 @@ public:
     void initialize();
     void play();
     void clearBoard();
-    char getSquare(int x, int y);
+    char at(int x, int y);
     int checkForWin(int currPlayer, char marker, int x, int y);
     void playerWins();
     void aiWins();
     void draw();
-    void setSquare(int x, int y, char marker);
+    void set(int x, int y, char marker);
     void printBoard();
     vector<int> playerTurn(char marker);
     vector<int> aiTurn(char marker) ;
     bool isTaken(int x, int y);
 
-
+    vector<int> findWinningPlay(const vector< vector<int> > & line);
+    vector<int> preventLosingPlay(const vector< vector<int> > & line);
+    vector<int> playRandom();
+    
 private:
     Board board;
     int nextPlayer;            // 1 for player, 2 for ai; irrespective of marker type
@@ -36,7 +39,6 @@ private:
     int p_wins;
     int a_wins;
     int draws;
-    // player1: X, and x always goes first
-    // player2: O
-    // -1 means there is not yet a next player (game is over or hasn't started)
+    
+    vector < vector< vector <int> > > lines; // 
 };

@@ -1,9 +1,4 @@
 #include "Square.h"
-#include <iostream>
-using namespace std;
-Square::Square() {
-    state = ' '; // by default
-}
 
 Square::Square(char s) {
     state = s;

@@ -6,8 +6,8 @@ using namespace std;
 class Board {
 public:
 	Board();
-    char getSquare(int x, int y);
-    void setSquare(int x, int y, char newState);
+    char at(int x, int y);
+    void set(int x, int y, char newState);
 private:
     vector< vector<Square> > squares;  //2d vector of squares
 };

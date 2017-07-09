@@ -134,12 +134,12 @@ void Game::play() {
 void Game::clearBoard() {
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
-            board.setSquare(i, j, ' ');
+            board.set(i, j, ' ');
 }
 
 // returns 'X', 'O', or ' '
-char Game::getSquare(int x, int y) {
-    return board.getSquare(x, y);
+char Game::at(int x, int y) {
+    return board.at(x, y);
 }
 
 // returns currPlayer (1 for player, 2 for ai), which is designated as winner
@@ -149,17 +149,17 @@ int Game::checkForWin(int currPlayer, char marker, int x, int y) {
     // algorithm: check the row and column; corner case are the corner places and middle
 
     // 1. check if (x, 0), (x, 1), (x, 2) are all marker
-    if (getSquare(x, 2) == marker &&
-        getSquare(x, 1) == marker &&
-        getSquare(x, 0) == marker) {
+    if (at(x, 2) == marker &&
+        at(x, 1) == marker &&
+        at(x, 0) == marker) {
         // declare winner
         return currPlayer;
     }
 
     // 2. check if (0, y), (1, y), (2, y) are all marker
-    if (getSquare(0, y) == marker &&
-        getSquare(1, y) == marker &&
-        getSquare(2, y) == marker) {
+    if (at(0, y) == marker &&
+        at(1, y) == marker &&
+        at(2, y) == marker) {
         // declare winner
         return currPlayer;
     }
@@ -168,26 +168,26 @@ int Game::checkForWin(int currPlayer, char marker, int x, int y) {
     if ((x+y) % 2 == 0) {
         if (x + y == 2) {
             // 3. check if (0, 2), (1, 1), (2, 0) are marker
-            if (getSquare(0, 2) == marker &&
-                getSquare(1, 1) == marker &&
-                getSquare(2, 0) == marker) {
+            if (at(0, 2) == marker &&
+                at(1, 1) == marker &&
+                at(2, 0) == marker) {
                 // declare winner
                 return currPlayer;
             }
             if (x == 1) { // of course y is 1
                 // 4a. check if (0, 0), (1, 1), (2, 2) are marker
-                if (getSquare(0, 0) == marker &&
-                    getSquare(1, 1) == marker &&
-                    getSquare(2, 2) == marker) {
+                if (at(0, 0) == marker &&
+                    at(1, 1) == marker &&
+                    at(2, 2) == marker) {
                     // declare winner
                     return currPlayer;
                 }
             }
         } else {
             // 4b. check if (0, 0), (1, 1), (2, 2) are marker
-            if (getSquare(0, 0) == marker &&
-                getSquare(1, 1) == marker &&
-                getSquare(2, 2) == marker) {
+            if (at(0, 0) == marker &&
+                at(1, 1) == marker &&
+                at(2, 2) == marker) {
                 // declare winner
                 return currPlayer;
             }
@@ -223,17 +223,17 @@ void Game::draw() {
     draws++;
 }
 
-void Game::setSquare(int x, int y, char marker) {
-    board.setSquare(x, y, marker);
+void Game::set(int x, int y, char marker) {
+    board.set(x, y, marker);
 }
 
 void Game::printBoard() {
     cout << "#############" << endl;
-    cout << "# " << getSquare(0, 0) << " # " << getSquare(0, 1) << " # " << getSquare(0, 2) << " #" << endl;
+    cout << "# " << at(0, 0) << " # " << at(0, 1) << " # " << at(0, 2) << " #" << endl;
     cout << "#############" << endl;
-    cout << "# " << getSquare(1, 0) << " # " << getSquare(1, 1) << " # " << getSquare(1, 2) << " #" << endl;
+    cout << "# " << at(1, 0) << " # " << at(1, 1) << " # " << at(1, 2) << " #" << endl;
     cout << "#############" << endl;
-    cout << "# " << getSquare(2, 0) << " # " << getSquare(2, 1) << " # " << getSquare(2, 2) << " #" << endl;
+    cout << "# " << at(2, 0) << " # " << at(2, 1) << " # " << at(2, 2) << " #" << endl;
     cout << "#############" << endl;
 }
 
@@ -255,7 +255,7 @@ vector<int> Game::playerTurn(char marker) {
         occupied = isTaken(x, y);
     }
 
-    setSquare(x, y, marker);
+    set(x, y, marker);
 
     vector<int> choice(2);
     choice[0] = x;
@@ -263,41 +263,76 @@ vector<int> Game::playerTurn(char marker) {
     return choice;
 }
 
+
+
+
+// Algorithm: make
 vector<int> Game::aiTurn(char marker) {
-    // it depends on whether AI is x or O
-    // TODO: This part.
     bool found = false;
-    int x, y;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
 
-            // just iterate, and see if it's taken or not
-            if (!isTaken(i, j)) {
 
-                x = i;
-                y = j;
 
-                // break out of the inner loop
-                found = true;
-                break;
-            }
+    vector<int> c00 = {0, 0};
+    vector<int> c01 = {0, 1};
+    vector<int> c02 = {0, 2};
+    vector<int> c10 = {1, 0};
+    vector<int> c11 = {1, 1};
+    vector<int> c12 = {1, 2};
+    vector<int> c20 = {2, 0};
+    vector<int> c21 = {2, 1};
+    vector<int> c22 = {2, 2};
 
-        }
-        // break out of the outer loop
-        if (found) {
-            break;
+    vector< vector<int> > line1 = {c00, c01, c02 };
+    vector< vector<int> > line2 = {c10, c11, c12 };
+    vector< vector<int> > line3 = {c20, c21, c22 };
+    vector< vector<int> > line4 = {c00, c10, c20 };
+    vector< vector<int> > line5 = {c01, c11, c21 }; // this one
+    vector< vector<int> > line6 = {c02, c12, c22 };
+    vector< vector<int> > line7 = {c00, c11, c22 };
+    vector< vector<int> > line8 = {c02, c11, c20 };
+
+    vector < vector< vector<int> > > allLines =
+    {line1, line2, line3, line4, line5, line6, line7, line8};
+
+    vector<int> coord;
+
+    cout << "Finding winning play" << endl;
+
+    for (int i = 0; i < 8; i++) {
+        coord = findWinningPlay(allLines[i]);
+
+        cout << "i: " << i << endl;
+        //cout << coord[0] << ", " << coord[1] << endl;
+        cout << "size: " << coord.size() << endl;
+
+        if (coord.size() > 0) {
+            set(coord[0], coord[1], aiMarker);
+            return coord;
         }
     }
-    setSquare(x, y, marker);
 
-    vector<int> choice(2);
-    choice[0] = x;
-    choice[1] = y;
-    return choice;
+    cout << "Finding losing play" << endl;
+
+    for (int i = 0; i < 8; i++) {
+        coord = preventLosingPlay(allLines[i]);
+
+        cout << "i: " << i << endl;
+        //cout << coord[0] << ", " << coord[1] << endl;
+        cout << "size: " << coord.size() << endl;
+        if (coord.size() > 0) {
+            set(coord[0], coord[1], aiMarker);
+            return coord;
+        }
+    }
+
+    coord = playRandom();
+    set(coord[0], coord[1], aiMarker);
+    return coord;
+
 }
 
 bool Game::isTaken(int x, int y) {
-    char z = getSquare(x, y);
+    char z = at(x, y);
     if (z == 'X' || z == 'O') {
         return true;
     } else {
@@ -305,3 +340,67 @@ bool Game::isTaken(int x, int y) {
     }
 }
 
+vector<int> Game::findWinningPlay(const vector< vector<int> > & line) {
+    // the line consists of three coordinates, and inspect 
+    int aiMarkerCount = 0;
+    int emptyCount = 0;
+    vector<int> toSet;
+
+    for (int i = 0; i < 3; i++) {
+        // inspect the marker placed at this coordinate
+        vector<int> coord = line[i];
+        if (at(coord[0], coord[1]) == aiMarker)
+            aiMarkerCount++;
+        else if (at(coord[0], coord[1]) == ' ') {
+            emptyCount++;
+            toSet = coord;
+        }
+    }
+
+    if (!(aiMarkerCount == 2 && emptyCount == 1)) {
+        // clear contents of toSet
+        toSet.clear();
+    }
+
+    return toSet; 
+}
+
+vector<int> Game::preventLosingPlay(const vector< vector<int> > & line) {
+    int playerMarkerCount = 0;
+    int emptyCount = 0;
+    vector<int> toSet;
+
+    for (int i = 0; i < 3; i++) {
+        // inspect the marker placed at this coordinate
+        vector<int> coord = line[i];
+
+        cout << "coord: " << coord[0] << ", " << coord[1] << endl;
+
+        if (at(coord[0], coord[1]) == playerMarker)
+            playerMarkerCount++;
+        else if (at(coord[0], coord[1]) == ' ') {
+            emptyCount++;
+            toSet = coord;
+        }
+    }
+
+    if (!(playerMarkerCount == 2 && emptyCount == 1)) {
+        // clear contents of toSet
+        toSet.clear();
+    }
+    
+    return toSet; 
+}
+
+
+vector<int> Game::playRandom() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            // just iterate, and see if it's taken or not
+            if (!isTaken(i, j)) {
+                vector<int> toSet = {i, j};
+                return toSet;
+            }
+        }
+    }
+}
