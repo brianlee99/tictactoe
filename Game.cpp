@@ -1,10 +1,8 @@
 #include "Game.h"
-
-//#include "Square.h"
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
 using namespace std;
-
 
 Game::Game() {
     nextPlayer = -1;
@@ -199,8 +197,6 @@ int Game::checkForWin(int currPlayer, char marker, int x, int y) {
     // a) There is not yet a decided winner or 
     // b) there is a draw
     // check for a draw by looking at turns
-    cout << "COUT " << endl;
-    cout << turn << endl;
     if (turn == 9) {
         return 3;
     } else {
@@ -244,7 +240,13 @@ vector<int> Game::playerTurn(char marker) {
     // How should the user specify their input?
     int x, y;
     cin >> x >> y;
-    bool occupied = isTaken(x, y);
+    bool occupied;
+    if (x >= 0 && x <= 2 && y >= 0 & y <= 2) {
+        cout << "Test" << endl;
+        occupied = isTaken(x, y);
+    } else {
+        occupied = true;
+    }
 
     // Check that x and y are within acceptable limits (betwen 0 and 2)
     while (x > 2 || x < 0 || y > 2 || y < 0 || occupied) {
@@ -255,25 +257,20 @@ vector<int> Game::playerTurn(char marker) {
             cout << "Please specify proper x and y values" << endl;
         }
         cin >> x >> y;
-        occupied = isTaken(x, y);
+        cout << "x is " << x << " and y is " << y << endl;
+        if (x >= 0 && x <= 2 && y >= 0 & y <= 2) {
+            cout << "Test" << endl;
+            occupied = isTaken(x, y);
+        }
     }
 
     set(x, y, marker);
-
-    vector<int> choice(2);
-    choice[0] = x;
-    choice[1] = y;
+    vector<int> choice = {x, y};
     return choice;
 }
 
-
-
-
-// Algorithm: make
 vector<int> Game::aiTurn(char marker) {
     bool found = false;
-
-
 
     vector<int> c00 = {0, 0};
     vector<int> c01 = {0, 1};
@@ -289,7 +286,7 @@ vector<int> Game::aiTurn(char marker) {
     vector< vector<int> > line2 = {c10, c11, c12 };
     vector< vector<int> > line3 = {c20, c21, c22 };
     vector< vector<int> > line4 = {c00, c10, c20 };
-    vector< vector<int> > line5 = {c01, c11, c21 }; // this one
+    vector< vector<int> > line5 = {c01, c11, c21 };
     vector< vector<int> > line6 = {c02, c12, c22 };
     vector< vector<int> > line7 = {c00, c11, c22 };
     vector< vector<int> > line8 = {c02, c11, c20 };
@@ -298,8 +295,6 @@ vector<int> Game::aiTurn(char marker) {
     {line1, line2, line3, line4, line5, line6, line7, line8};
 
     vector<int> coord;
-
-    cout << "Finding winning play" << endl;
 
     for (int i = 0; i < 8; i++) {
         coord = findWinningPlay(allLines[i]);
@@ -314,8 +309,6 @@ vector<int> Game::aiTurn(char marker) {
         }
     }
 
-    cout << "Finding losing play" << endl;
-
     for (int i = 0; i < 8; i++) {
         coord = preventLosingPlay(allLines[i]);
 
@@ -327,6 +320,16 @@ vector<int> Game::aiTurn(char marker) {
             return coord;
         }
     }
+
+    // Here, the AI might choose to do a couple of things
+    // If the AI is going second, and say the player has placed an X
+    // in the middle. Then the AI would definitely place at a corner.
+    if (turn == 2 && at(1, 1) == 'X') {
+        coord = playCorner();
+        set(coord[0], coord[1], aiMarker);
+        return coord;
+    }
+
 
     coord = playRandom();
     set(coord[0], coord[1], aiMarker);
@@ -406,4 +409,21 @@ vector<int> Game::playRandom() {
             }
         }
     }
+}
+
+
+// Plays one of the four corners at random
+vector<int> Game::playCorner() {
+    int choice = rand() % 4;
+    vector<int> toSet;
+    if (choice == 0) {
+        toSet = {0, 0};
+    } else if (choice == 1) {
+        toSet = {0, 2};
+    } else if (choice == 2) {
+        toSet = {2, 0};
+    } else if (choice == 3) {
+        toSet = {2, 2};
+    }
+    return toSet;
 }

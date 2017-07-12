@@ -27,6 +27,7 @@ public:
     vector<int> findWinningPlay(const vector< vector<int> > & line);
     vector<int> preventLosingPlay(const vector< vector<int> > & line);
     vector<int> playRandom();
+    vector<int> playCorner();
     
 private:
     Board board;
